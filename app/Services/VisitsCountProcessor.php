@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Illuminate\Contracts\Redis\Connection;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Redis;
 
@@ -13,6 +14,7 @@ class VisitsCountProcessor
     private const CACHE_KEY = 'country:visits';
 
     public function __construct(
+        private readonly Connection $redisConnection,
         private readonly Logger $logger,
     )
     {
@@ -25,7 +27,7 @@ class VisitsCountProcessor
     {
         $result = [];
         try {
-            $result = Redis::hgetall(self::CACHE_KEY);
+            $result = $this->redisConnection->command('hgetall', [self::CACHE_KEY]);
         } catch (\Throwable) {
             $this->logger->error('Country visits getting failed');
         }
@@ -36,7 +38,7 @@ class VisitsCountProcessor
     {
         $result = false;
         try {
-            Redis::hincrby(self::CACHE_KEY, $countryCode, 1);
+            $this->redisConnection->command('hincrby', [self::CACHE_KEY, $countryCode, 1]);
             $result = true;
         } catch (\Throwable) {
             $this->logger->error('Country increment failed', [$countryCode]);
