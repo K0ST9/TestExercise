@@ -30,7 +30,6 @@ services:
   php:
     build:
       dockerfile: ./_docker/backend-php-fpm/Dockerfile
-      target: php_base
     container_name: exercise_php
     restart: unless-stopped
     volumes:
