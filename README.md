@@ -15,3 +15,4 @@
 ## N.B.
 1. Documentation is described in `docs\openapi.yaml` file and is proxied by `swagger_ui` container
 2. `pgsql` container is just need for the `laravel/telescope` package for local debugging
+3. `tests\Feature\ExampleTest.php` contains testCase, where random "country" is generating, API is calling and the result is asserting with defined values 
