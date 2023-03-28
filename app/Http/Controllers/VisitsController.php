@@ -31,7 +31,7 @@ class VisitsController extends BaseController
             $code = 201;
             $data = ['message' => 'Visit info saved'];
         } else {
-            $code = 400;
+            $code = 500;
             $data = ['message' => 'Visit info not saved'];
         }
 

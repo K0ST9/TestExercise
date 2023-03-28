@@ -1,13 +1,85 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  title: Exercise
-  description: ''
-  version: 1.0.0
+  version: "1.0.0"
+  title: "API documentation for visits"
+
 servers:
-  -
-    url: 'http://localhost'
+  - url: http://localhost/api
+
 paths:
-tags:
-  -
-    name: Endpoints
-    description: ''
+  /visits:
+    post:
+      summary: "Save visit information"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+      responses:
+        '201':
+          description: "Visit info saved"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Visit info saved"
+        '422':
+          description: "Invalid input"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The country field format is invalid."
+                  errors:
+                    type: object
+                    properties:
+                      country:
+                        type: array
+                        items:
+                          type: string
+                        example: ["The country field format is invalid."]
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Visit info not saved"
+
+    get:
+      summary: "Get country visits information"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ZZ:
+                    type: string
+                    example: "2"
+                  XX:
+                    type: string
+                    example: "5"
+                  RU:
+                    type: string
+                    example: "1"
+                  US:
+                    type: string
+                    example: "1"
+                  YY:
+                    type: string
+                    example: "1"
