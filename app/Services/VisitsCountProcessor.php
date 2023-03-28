@@ -21,12 +21,13 @@ class VisitsCountProcessor
     }
 
     /**
-     * @return array{string: int}
+     * @return string[]
      */
     public function getAllCountriesCount(): array
     {
         $result = [];
         try {
+            /** @var string[] $result */
             $result = $this->redisConnection->command('hgetall', [self::CACHE_KEY]);
         } catch (\Throwable) {
             $this->logger->error('Country visits getting failed');
