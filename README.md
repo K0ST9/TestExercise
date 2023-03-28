@@ -1,5 +1,6 @@
 # About Application
 
+### Getting started
 1. Copy `.env.example` to `.env` file anf fill the values if need 
 2. Run `docker-compose up` form the directory root
 3. Now you can call the API described in http://localhost:8100/
