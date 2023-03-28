@@ -1,0 +1,66 @@
+version: '3.6'
+
+networks:
+  exercise_network:
+
+volumes:
+  exercise_db_data:
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: exercise_redis
+    restart: unless-stopped
+    networks:
+      - exercise_network
+
+  nginx:
+    build:
+      dockerfile: ./_docker/nginx/Dockerfile
+    image: nginx:stable-alpine
+    container_name: exercise_nginx
+    restart: unless-stopped
+    volumes:
+      - ./_docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    networks:
+      - exercise_network
+
+  php:
+    build:
+      dockerfile: ./_docker/backend-php-fpm/Dockerfile
+      target: php_base
+    container_name: exercise_php
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+      - ./_docker/backend-php-fpm/php-dev.ini:/usr/local/etc/php/conf.d/php-dev.ini
+    env_file: ./_docker/backend-php-fpm/dev.env
+    networks:
+      - exercise_network
+
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: exercise_network_swagger_ui
+    ports:
+      - "8100:8080"
+    volumes:
+      - ./docs/openapi.yaml:/usr/share/nginx/html/docs/openapi.yaml
+    environment:
+      API_URL: docs/openapi.yaml
+
+  pgsql:
+      image: postgres:14.4-alpine
+      container_name: exercise_pgsql
+      restart: unless-stopped
+      ports:
+          - "5432:5432"
+      volumes:
+          - exercise_db_data:/var/lib/postgresql/data
+      environment:
+          POSTGRES_PASSWORD: exercise
+          POSTGRES_USER: exercise
+      networks:
+          - exercise_network
