@@ -1,18 +1,23 @@
-FROM registry.fraktal.wattdev.ru/common/php-8.1-common:latest as php_base
+FROM php:8.1-fpm
 
-FROM php_base as php_main
-ARG ENV
-ARG AUHT_JSON_TMP
-ENV COMPOSER_AUTH=${AUHT_JSON_TMP}
-COPY project .
-RUN chown -R www-data:www-data storage bootstrap
+# Add docker-php-extension-installer
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions
+
+# Install system dependencies
+#RUN install-php-extensions zip pdo_pgsql gd xdebug-^3.1 redis
+RUN install-php-extensions zip pdo_pgsql redis
+
+# Install the Composer
+RUN install-php-extensions @composer
+
+# Copy project
+RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
+COPY . .
+
+ENV DOCKER_BUILDING=true
+# Download Composer dependencies
 RUN composer install --no-dev
-CMD php artisan migrate 
-    # && \
-    # php-fpm -y /usr/local/etc/php-fpm.conf -R
 
-FROM nginx:stable-alpine as nginx
-WORKDIR /var/www/html/
-
-COPY --from=php_main /var/www/html/public .
+CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
